@@ -86,6 +86,13 @@ function newQuestion(){
 
   const i = Math.floor(Math.random() * pool.length);
   current = pool[i];
+// 国名表示（首都モードのときだけ）
+const prompt = document.getElementById("prompt");
+if (mode === "capital") {
+  prompt.textContent = current.name + " の首都は？";
+} else {
+  prompt.textContent = "";
+}
 
   document.getElementById("flag").src = flagPath(current.code);
 
@@ -129,6 +136,7 @@ function newQuestion(){
 
 </body>
 </html>
+
 
 
 
