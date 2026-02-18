@@ -36,12 +36,20 @@
 </div>
 
 <script>
-const DATA = [
-  { name: "日本", code: "jp" },
-  { name: "アメリカ", code: "us" },
-  { name: "フランス", code: "fr" },
-  { name: "イタリア", code: "it" },
-];
+let DATA = [];
+
+async function loadData(){
+  const res = await fetch("./data.json");
+  DATA = await res.json();
+}
+
+async function start(){
+  await loadData();
+  newQuestion();
+}
+
+start();
+
 
 function flagPath(code){
   return "./flags/4x3/" + code + ".svg";
@@ -77,7 +85,7 @@ function newQuestion(){
   });
 }
 
-newQuestion();
+
 </script>
 
 </body>
