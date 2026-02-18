@@ -133,6 +133,8 @@ function newQuestion(){
 
   const i = Math.floor(Math.random() * pool.length);
   current = pool[i];
+  current.answered = false;
+
 // 国名表示（首都モードのときだけ）
 const prompt = document.getElementById("prompt");
 if (mode === "capital") {
@@ -173,34 +175,35 @@ btn.textContent = cap + kana;
 }
 
 
-   btn.onclick = () => {
+btn.onclick = () => {
+  // 1問1回答にする
+  if (current.answered) return;
+  current.answered = true;
+
+  // ボタン全部無効化
+  document.querySelectorAll("#choices button").forEach(b => b.disabled = true);
+
   const result = document.getElementById("result");
-scoreState.correct += 1;
-scoreState.streak += 1;
-scoreState.best = Math.max(scoreState.best, scoreState.streak);
-saveScore();
-renderScore();
 
   if (c.code === current.code) {
+    // 正解処理
+    scoreState.correct += 1;
+    scoreState.streak += 1;
+    scoreState.best = Math.max(scoreState.best, scoreState.streak);
+    saveScore();
+    renderScore();
     result.textContent = "正解！";
-    return;
-  }
-
-  if (mode === "capital") {
-    const cap = current.capital || "（不明）";
-    const kanaRaw = (typeof CAPITAL_KANA_OVERRIDE !== "undefined" ? (CAPITAL_KANA_OVERRIDE[cap] || "") : "")
-                 || current.capital_kana
-                 || "";
-  scoreState.wrong += 1;
-scoreState.streak = 0;
-saveScore();
-renderScore();
-  const kana = kanaRaw ? `（${kanaRaw}）` : "";
-    result.textContent = "不正解… 正解は " + cap + kana;
   } else {
+    // 不正解処理
+    scoreState.wrong += 1;
+    scoreState.streak = 0;
+    saveScore();
+    renderScore();
+
     result.textContent = "不正解… 正解は " + current.name;
   }
 };
+
 
 
     div.appendChild(btn);
@@ -213,6 +216,7 @@ renderScore();
 
 </body>
 </html>
+
 
 
 
