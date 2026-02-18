@@ -44,7 +44,7 @@
 let DATA = [];
 
 async function loadData(){
-  const res = await fetch("./data.json");
+  const res = await fetch("./data_with_kana.json");
   DATA = await res.json();
 }
 
@@ -115,14 +115,29 @@ if (mode === "capital") {
     const btn = document.createElement("button");
 
     // 表示ラベル：国名 or 首都
-    btn.textContent = (mode === "capital") ? (c.capital || "（不明）") : c.name;
+    if (mode === "capital") {
+  const cap = c.capital || "（不明）";
+  const kana = c.capital_kana ? `（${c.capital_kana}）` : "";
+  btn.textContent = cap + kana;
+} else {
+  btn.textContent = c.name;
+}
+
 
     btn.onclick = ()=>{
       if(c.code === current.code){
         document.getElementById("result").textContent="正解！";
       } else {
-        const correctLabel = (mode === "capital") ? current.capital : current.name;
-        document.getElementById("result").textContent="不正解… 正解は " + correctLabel;
+       let correctLabel;
+if (mode === "capital") {
+  const cap = current.capital || "（不明）";
+  const kana = current.capital_kana ? `（${current.capital_kana}）` : "";
+  correctLabel = cap + kana;
+} else {
+  correctLabel = current.name;
+}
+document.getElementById("result").textContent="不正解… 正解は " + correctLabel;
+
       }
     };
 
@@ -136,6 +151,7 @@ if (mode === "capital") {
 
 </body>
 </html>
+
 
 
 
