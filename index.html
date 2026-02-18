@@ -136,24 +136,26 @@ btn.textContent = cap + kana;
 }
 
 
-    btn.onclick = ()=>{
-      if(c.code === current.code){
-        document.getElementById("result").textContent="正解！";
-      } else {
-       let correctLabel;
-if (mode === "capital") {
-const cap = c.capital || "（不明）";
-const kanaRaw = CAPITAL_KANA_OVERRIDE[cap] || c.capital_kana || "";
-const kana = kanaRaw ? `（${kanaRaw}）` : "";
-btn.textContent = cap + kana;
+   btn.onclick = () => {
+  const result = document.getElementById("result");
 
-} else {
-  correctLabel = current.name;
-}
-document.getElementById("result").textContent="不正解… 正解は " + correctLabel;
+  if (c.code === current.code) {
+    result.textContent = "正解！";
+    return;
+  }
 
-      }
-    };
+  if (mode === "capital") {
+    const cap = current.capital || "（不明）";
+    const kanaRaw = (typeof CAPITAL_KANA_OVERRIDE !== "undefined" ? (CAPITAL_KANA_OVERRIDE[cap] || "") : "")
+                 || current.capital_kana
+                 || "";
+    const kana = kanaRaw ? `（${kanaRaw}）` : "";
+    result.textContent = "不正解… 正解は " + cap + kana;
+  } else {
+    result.textContent = "不正解… 正解は " + current.name;
+  }
+};
+
 
     div.appendChild(btn);
   });
@@ -165,6 +167,7 @@ document.getElementById("result").textContent="不正解… 正解は " + correc
 
 </body>
 </html>
+
 
 
 
