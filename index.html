@@ -15,7 +15,9 @@
   <link rel="manifest" href="./manifest.json">
 
   <style>
-   body { -webkit-tap-highlight-color: transparent; }
+   #result { font-size: 48px; font-weight: 800; margin: 12px 0 6px; }
+#result small { display:block; font-size: 18px; font-weight: 600; margin-top: 6px; }
+body { -webkit-tap-highlight-color: transparent; }
 button { cursor: pointer; }
 button:disabled { opacity: 0.5; }
  body { font-family: system-ui; margin: 16px; }
@@ -43,7 +45,6 @@ button:disabled { opacity: 0.5; }
   <div id="choices"></div>
   <p id="result"></p>
 <p id="score" style="margin:10px 0 0 0;"></p>
-<button id="resetScore" style="margin-top:8px;">スコアリセット</button>
 
   <button onclick="newQuestion()">次の問題</button>
 </div>
@@ -58,14 +59,12 @@ async function loadData(){
 
 async function start(){
   await loadData();
-  loadScore();
   renderScore();
   newQuestion();
 }
 
 
 start();
-document.getElementById("resetScore")?.addEventListener("click", resetScore);
 
 
 function flagPath(code){
@@ -75,35 +74,19 @@ function flagPath(code){
 let current = null;
 
   // ---- スコア（localStorageに保存）----
-const SCORE_KEY = "flagquiz_score_v1";
+const 
 
 let scoreState = { correct: 0, wrong: 0, streak: 0, best: 0 };
 
-function loadScore(){
-  try{
-    const raw = localStorage.getItem(SCORE_KEY);
-    if(raw) scoreState = JSON.parse(raw);
-  }catch(e){}
-}
 
-function saveScore(){
-  try{
-    localStorage.setItem(SCORE_KEY, JSON.stringify(scoreState));
-  }catch(e){}
-}
 
 function renderScore(){
   const el = document.getElementById("score");
   if(!el) return;
-  el.textContent =
-    `正解 ${scoreState.correct} / 不正解 ${scoreState.wrong} ｜ 連続正解 ${scoreState.streak}（最高 ${scoreState.best}）`;
+  el.textContent = `連続正解 ${scoreState.streak}　／　ベスト ${scoreState.best}`;
 }
 
-function resetScore(){
-  scoreState = { correct: 0, wrong: 0, streak: 0, best: 0 };
-  saveScore();
-  renderScore();
-}
+
 
 function getMode(){
   return document.querySelector('input[name="mode"]:checked')?.value || "country";
@@ -194,32 +177,29 @@ btn.onclick = () => {
 
   if (isCorrect) {
     // 正解加算（ここだけ）
-    scoreState.correct += 1;
-    scoreState.streak += 1;
-    scoreState.best = Math.max(scoreState.best, scoreState.streak);
-    saveScore();
-    renderScore();
+   scoreState.streak += 1;
+scoreState.best = Math.max(scoreState.best, scoreState.streak);
+renderScore();
 
-    result.textContent = "正解！";
-    return;
+result.textContent = "⭕️";
+
   }
 
   // 不正解加算（ここだけ）
-  scoreState.wrong += 1;
-  scoreState.streak = 0;
-  saveScore();
-  renderScore();
+ scoreState.streak = 0;
+renderScore();
+
 
   // 不正解時の“正解表示”（首都モード対応）
-  if (mode === "capital") {
-    const cap = current.capital || "（不明）";
-    const kanaRaw = (CAPITAL_KANA_OVERRIDE[cap] || current.capital_kana || "");
-    const kana = kanaRaw ? `（${kanaRaw}）` : "";
-    result.textContent = "不正解… 正解は " + cap + kana;
-  } else {
-    result.textContent = "不正解… 正解は " + current.name;
-  }
-};
+ if (mode === "capital") {
+  const cap = current.capital || "（不明）";
+  const kanaRaw = (CAPITAL_KANA_OVERRIDE[cap] || current.capital_kana || "");
+  const kana = kanaRaw ? `（${kanaRaw}）` : "";
+  result.innerHTML = "❌<small>正解は " + cap + kana + "</small>";
+} else {
+  result.innerHTML = "❌<small>正解は " + current.name + "</small>";
+}
+
 
 
 
@@ -233,6 +213,7 @@ btn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
