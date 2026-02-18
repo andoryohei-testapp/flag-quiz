@@ -22,7 +22,18 @@ button { cursor: pointer; }
 button:disabled { opacity: 0.5; }
  body { font-family: system-ui; margin: 16px; }
     .card { border: 1px solid #ddd; border-radius: 16px; padding: 16px; max-width: 600px; }
-    button { padding: 12px; margin: 6px; border-radius: 12px; border: 1px solid #ccc; }
+   button {
+  padding: 14px;
+  margin: 8px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 20px;   /* ←文字を大きく */
+  font-weight: 700;  /* ←少し太くして見やすく */
+}
+    button {
+  width: 90%;
+  max-width: 420px;
+}
     .flagBox { width: 220px; border: 1px solid #eee; border-radius: 12px; overflow:hidden; }
     .flagBox img { width: 100%; display:block; }
   </style>
@@ -202,6 +213,7 @@ if (mode === "capital") {
 
 </body>
 </html>
+
 
 
 
