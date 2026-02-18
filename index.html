@@ -36,6 +36,8 @@
 <p id="prompt" style="margin:10px 0 0 0; font-weight:700;"></p>
   <div id="choices"></div>
   <p id="result"></p>
+<p id="score" style="margin:10px 0 0 0;"></p>
+<button id="resetScore" style="margin-top:8px;">スコアリセット</button>
 
   <button onclick="newQuestion()">次の問題</button>
 </div>
@@ -50,10 +52,14 @@ async function loadData(){
 
 async function start(){
   await loadData();
+  loadScore();
+  renderScore();
   newQuestion();
 }
 
+
 start();
+document.getElementById("resetScore")?.addEventListener("click", resetScore);
 
 
 function flagPath(code){
@@ -61,6 +67,37 @@ function flagPath(code){
 }
 
 let current = null;
+
+  // ---- スコア（localStorageに保存）----
+const SCORE_KEY = "flagquiz_score_v1";
+
+let scoreState = { correct: 0, wrong: 0, streak: 0, best: 0 };
+
+function loadScore(){
+  try{
+    const raw = localStorage.getItem(SCORE_KEY);
+    if(raw) scoreState = JSON.parse(raw);
+  }catch(e){}
+}
+
+function saveScore(){
+  try{
+    localStorage.setItem(SCORE_KEY, JSON.stringify(scoreState));
+  }catch(e){}
+}
+
+function renderScore(){
+  const el = document.getElementById("score");
+  if(!el) return;
+  el.textContent =
+    `正解 ${scoreState.correct} / 不正解 ${scoreState.wrong} ｜ 連続正解 ${scoreState.streak}（最高 ${scoreState.best}）`;
+}
+
+function resetScore(){
+  scoreState = { correct: 0, wrong: 0, streak: 0, best: 0 };
+  saveScore();
+  renderScore();
+}
 
 function getMode(){
   return document.querySelector('input[name="mode"]:checked')?.value || "country";
@@ -138,6 +175,11 @@ btn.textContent = cap + kana;
 
    btn.onclick = () => {
   const result = document.getElementById("result");
+scoreState.correct += 1;
+scoreState.streak += 1;
+scoreState.best = Math.max(scoreState.best, scoreState.streak);
+saveScore();
+renderScore();
 
   if (c.code === current.code) {
     result.textContent = "正解！";
@@ -149,7 +191,11 @@ btn.textContent = cap + kana;
     const kanaRaw = (typeof CAPITAL_KANA_OVERRIDE !== "undefined" ? (CAPITAL_KANA_OVERRIDE[cap] || "") : "")
                  || current.capital_kana
                  || "";
-    const kana = kanaRaw ? `（${kanaRaw}）` : "";
+  scoreState.wrong += 1;
+scoreState.streak = 0;
+saveScore();
+renderScore();
+  const kana = kanaRaw ? `（${kanaRaw}）` : "";
     result.textContent = "不正解… 正解は " + cap + kana;
   } else {
     result.textContent = "不正解… 正解は " + current.name;
@@ -167,6 +213,7 @@ btn.textContent = cap + kana;
 
 </body>
 </html>
+
 
 
 
