@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>国旗クイズ</title>
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="国旗クイズ">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="manifest" href="./manifest.json">
+
+  <style>
+    body { font-family: system-ui; margin: 16px; }
+    .card { border: 1px solid #ddd; border-radius: 16px; padding: 16px; max-width: 600px; }
+    button { padding: 12px; margin: 6px; border-radius: 12px; border: 1px solid #ccc; }
+    .flagBox { width: 220px; border: 1px solid #eee; border-radius: 12px; overflow:hidden; }
+    .flagBox img { width: 100%; display:block; }
+  </style>
+</head>
+
+<body>
+<div class="card">
+  <h2>国旗クイズ（画像版）</h2>
+
+  <p>この国旗はどこの国？</p>
+  <div class="flagBox">
+    <img id="flag" src="">
+  </div>
+
+  <div id="choices"></div>
+  <p id="result"></p>
+
+  <button onclick="newQuestion()">次の問題</button>
+</div>
+
+<script>
+const DATA = [
+  { name: "日本", code: "jp" },
+  { name: "アメリカ", code: "us" },
+  { name: "フランス", code: "fr" },
+  { name: "イタリア", code: "it" },
+];
+
+function flagPath(code){
+  return "./flags/4x3/" + code + ".svg";
+}
+
+let current = null;
+
+function newQuestion(){
+  document.getElementById("result").textContent = "";
+  const i = Math.floor(Math.random()*DATA.length);
+  current = DATA[i];
+
+  document.getElementById("flag").src = flagPath(current.code);
+
+  // choices
+  const shuffled = [...DATA].sort(()=>Math.random()-0.5);
+  const choices = shuffled.slice(0,4);
+
+  const div = document.getElementById("choices");
+  div.innerHTML = "";
+
+  choices.forEach(c=>{
+    const btn = document.createElement("button");
+    btn.textContent = c.name;
+    btn.onclick = ()=>{
+      if(c.code===current.code){
+        document.getElementById("result").textContent="正解！";
+      } else {
+        document.getElementById("result").textContent="不正解… 正解は "+current.name;
+      }
+    };
+    div.appendChild(btn);
+  });
+}
+
+newQuestion();
+</script>
+
+</body>
+</html>
