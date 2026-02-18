@@ -74,7 +74,6 @@ function flagPath(code){
 let current = null;
 
   // ---- スコア（localStorageに保存）----
-const 
 
 let scoreState = { correct: 0, wrong: 0, streak: 0, best: 0 };
 
@@ -149,63 +148,53 @@ if (mode === "capital") {
   const div = document.getElementById("choices");
   div.innerHTML = "";
 
-  choices.forEach(c=>{
-    const btn = document.createElement("button");
+  choices.forEach(c => {
+  const btn = document.createElement("button");
 
-    // 表示ラベル：国名 or 首都
-    if (mode === "capital") {
-const cap = c.capital || "（不明）";
-const kanaRaw = CAPITAL_KANA_OVERRIDE[cap] || c.capital_kana || "";
-const kana = kanaRaw ? `（${kanaRaw}）` : "";
-btn.textContent = cap + kana;
-
-} else {
-  btn.textContent = c.name;
-}
-
-
-btn.onclick = () => {
-  // 1問1回答（連打・別ボタンでの再回答を完全遮断）
-  if (current.answered) return;
-  current.answered = true;
-
-  // ボタン全部無効化（“押した後に別の選択肢を押せる”を完全に潰す）
-  document.querySelectorAll("#choices button").forEach(b => b.disabled = true);
-
-  const result = document.getElementById("result");
-  const isCorrect = (c.code === current.code); // 判定はここで1回だけ確定
-
-  if (isCorrect) {
-    // 正解加算（ここだけ）
-   scoreState.streak += 1;
-scoreState.best = Math.max(scoreState.best, scoreState.streak);
-renderScore();
-
-result.textContent = "⭕️";
-
+  // 表示ラベル
+  if (mode === "capital") {
+    const cap = c.capital || "（不明）";
+    const kanaRaw = CAPITAL_KANA_OVERRIDE[cap] || c.capital_kana || "";
+    const kana = kanaRaw ? `（${kanaRaw}）` : "";
+    btn.textContent = cap + kana;
+  } else {
+    btn.textContent = c.name;
   }
 
-  // 不正解加算（ここだけ）
- scoreState.streak = 0;
-renderScore();
+  btn.onclick = () => {
+    if (current.answered) return;
+    current.answered = true;
 
+    document.querySelectorAll("#choices button").forEach(b => b.disabled = true);
 
-  // 不正解時の“正解表示”（首都モード対応）
- if (mode === "capital") {
-  const cap = current.capital || "（不明）";
-  const kanaRaw = (CAPITAL_KANA_OVERRIDE[cap] || current.capital_kana || "");
-  const kana = kanaRaw ? `（${kanaRaw}）` : "";
-  result.innerHTML = "❌<small>正解は " + cap + kana + "</small>";
-} else {
-  result.innerHTML = "❌<small>正解は " + current.name + "</small>";
-}
+    const result = document.getElementById("result");
+    const isCorrect = (c.code === current.code);
 
+    if (isCorrect) {
+      scoreState.streak += 1;
+      scoreState.best = Math.max(scoreState.best, scoreState.streak);
+      renderScore();
+      result.textContent = "⭕️";
+      return; // ← これ重要（正解のあとに不正解処理へ落ちない）
+    }
 
+    scoreState.streak = 0;
+    renderScore();
 
+    if (mode === "capital") {
+      const cap = current.capital || "（不明）";
+      const kanaRaw = (CAPITAL_KANA_OVERRIDE[cap] || current.capital_kana || "");
+      const kana = kanaRaw ? `（${kanaRaw}）` : "";
+      result.innerHTML = "❌<small>正解は " + cap + kana + "</small>";
+    } else {
+      result.innerHTML = "❌<small>正解は " + current.name + "</small>";
+    }
+  };
 
-    div.appendChild(btn);
-  });
-}
+  // ← appendChild は onclick の外！
+  div.appendChild(btn);
+});
+
 
 
 
@@ -213,6 +202,7 @@ renderScore();
 
 </body>
 </html>
+
 
 
 
