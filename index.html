@@ -176,30 +176,41 @@ btn.textContent = cap + kana;
 
 
 btn.onclick = () => {
-  // 1問1回答にする
+  // 1問1回答（連打・別ボタンでの再回答を完全遮断）
   if (current.answered) return;
   current.answered = true;
 
-  // ボタン全部無効化
+  // ボタン全部無効化（“押した後に別の選択肢を押せる”を完全に潰す）
   document.querySelectorAll("#choices button").forEach(b => b.disabled = true);
 
   const result = document.getElementById("result");
+  const isCorrect = (c.code === current.code); // 判定はここで1回だけ確定
 
-  if (c.code === current.code) {
-    // 正解処理
+  if (isCorrect) {
+    // 正解加算（ここだけ）
     scoreState.correct += 1;
     scoreState.streak += 1;
     scoreState.best = Math.max(scoreState.best, scoreState.streak);
     saveScore();
     renderScore();
-    result.textContent = "正解！";
-  } else {
-    // 不正解処理
-    scoreState.wrong += 1;
-    scoreState.streak = 0;
-    saveScore();
-    renderScore();
 
+    result.textContent = "正解！";
+    return;
+  }
+
+  // 不正解加算（ここだけ）
+  scoreState.wrong += 1;
+  scoreState.streak = 0;
+  saveScore();
+  renderScore();
+
+  // 不正解時の“正解表示”（首都モード対応）
+  if (mode === "capital") {
+    const cap = current.capital || "（不明）";
+    const kanaRaw = (CAPITAL_KANA_OVERRIDE[cap] || current.capital_kana || "");
+    const kana = kanaRaw ? `（${kanaRaw}）` : "";
+    result.textContent = "不正解… 正解は " + cap + kana;
+  } else {
     result.textContent = "不正解… 正解は " + current.name;
   }
 };
@@ -216,6 +227,7 @@ btn.onclick = () => {
 
 </body>
 </html>
+
 
 
 
