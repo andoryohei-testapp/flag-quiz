@@ -64,9 +64,25 @@ function newQuestion(){
 
   document.getElementById("flag").src = flagPath(current.code);
 
-  // choices
-  const shuffled = [...DATA].sort(()=>Math.random()-0.5);
-  const choices = shuffled.slice(0,4);
+ // choices（必ず正解を含める）
+let choices = [];
+
+// ① 正解を入れる
+choices.push(current);
+
+// ② 間違いを3つ追加
+while (choices.length < 4) {
+  const candidate = DATA[Math.floor(Math.random() * DATA.length)];
+
+  // 同じ国が重複しないようにする
+  if (!choices.some(c => c.code === candidate.code)) {
+    choices.push(candidate);
+  }
+}
+
+// ③ シャッフルする
+choices = choices.sort(() => Math.random() - 0.5);
+
 
   const div = document.getElementById("choices");
   div.innerHTML = "";
@@ -90,3 +106,4 @@ function newQuestion(){
 
 </body>
 </html>
+
