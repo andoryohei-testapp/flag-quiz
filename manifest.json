@@ -2,7 +2,11 @@
   "name": "国旗クイズ",
   "short_name": "国旗クイズ",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff"
+  "theme_color": "#ffffff",
+  "lang": "ja",
+  "orientation": "portrait-primary",
+  "description": "国旗と国名・首都をクイズで学べるアプリ"
 }
