@@ -23,7 +23,12 @@
 <body>
 <div class="card">
   <h2>国旗クイズ（画像版）</h2>
+<div style="margin: 8px 0 12px 0;">
+  <label><input type="radio" name="mode" value="country" checked> 国旗→国名</label>
+  <label style="margin-left:12px;"><input type="radio" name="mode" value="capital"> 国旗→首都</label>
+</div>
 
+  
   <p>この国旗はどこの国？</p>
   <div class="flagBox">
     <img id="flag" src="">
@@ -57,53 +62,72 @@ function flagPath(code){
 
 let current = null;
 
+function getMode(){
+  return document.querySelector('input[name="mode"]:checked')?.value || "country";
+}
+
 function newQuestion(){
   document.getElementById("result").textContent = "";
-  const i = Math.floor(Math.random()*DATA.length);
-  current = DATA[i];
+
+  // データ未読込ガード
+  if (!DATA.length) return;
+
+  const mode = getMode();
+
+  // mode=capital のときは「首都が入ってる国」だけを出題対象にする
+  let pool = DATA;
+  if (mode === "capital") {
+    pool = DATA.filter(x => (x.capital || "").trim().length > 0);
+    if (!pool.length) {
+      document.getElementById("result").textContent = "首都データがある国がありません";
+      return;
+    }
+  }
+
+  const i = Math.floor(Math.random() * pool.length);
+  current = pool[i];
 
   document.getElementById("flag").src = flagPath(current.code);
 
- // choices（必ず正解を含める）
-let choices = [];
+  // choices（必ず正解を含める）
+  let choices = [current];
 
-// ① 正解を入れる
-choices.push(current);
-
-// ② 間違いを3つ追加
-while (choices.length < 4) {
-  const candidate = DATA[Math.floor(Math.random() * DATA.length)];
-
-  // 同じ国が重複しないようにする
-  if (!choices.some(c => c.code === candidate.code)) {
-    choices.push(candidate);
+  while (choices.length < 4) {
+    const candidate = pool[Math.floor(Math.random() * pool.length)];
+    if (!choices.some(c => c.code === candidate.code)) {
+      choices.push(candidate);
+    }
   }
-}
 
-// ③ シャッフルする
-choices = choices.sort(() => Math.random() - 0.5);
-
+  choices = choices.sort(() => Math.random() - 0.5);
 
   const div = document.getElementById("choices");
   div.innerHTML = "";
 
   choices.forEach(c=>{
     const btn = document.createElement("button");
-    btn.textContent = c.name;
+
+    // 表示ラベル：国名 or 首都
+    btn.textContent = (mode === "capital") ? (c.capital || "（不明）") : c.name;
+
     btn.onclick = ()=>{
-      if(c.code===current.code){
+      if(c.code === current.code){
         document.getElementById("result").textContent="正解！";
       } else {
-        document.getElementById("result").textContent="不正解… 正解は "+current.name;
+        const correctLabel = (mode === "capital") ? current.capital : current.name;
+        document.getElementById("result").textContent="不正解… 正解は " + correctLabel;
       }
     };
+
     div.appendChild(btn);
   });
 }
+
 
 
 </script>
 
 </body>
 </html>
+
 
