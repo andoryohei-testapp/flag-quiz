@@ -313,7 +313,7 @@
   },
   {
     "code": "cw",
-    "name": "Curaçao",
+    "name": "キュラソー",
     "capital": "Willemstad",
     "capital_kana": "ウィレムスタッド"
   },
@@ -1523,4 +1523,5 @@
     "capital": "Harare",
     "capital_kana": "ハラレ"
   }
+
 ]
