@@ -64,7 +64,8 @@ button:disabled { opacity: 0.5; }
 let DATA = [];
 
 async function loadData(){
-  const res = await fetch("./data_with_kana.json");
+const res = await fetch("./data_un.json");
+
   DATA = await res.json();
 }
 
@@ -213,6 +214,7 @@ if (mode === "capital") {
 
 </body>
 </html>
+
 
 
 
